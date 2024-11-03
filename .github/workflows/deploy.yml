@@ -1,9 +1,8 @@
-name: CI/CD with Terraform
+name: CI/CD with terraform
 on:
   push:
     branches:
       - Complete-CI/CD-with-Terraform-AWS
-
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -17,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Mise à jour ici
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2  # Mise à jour ici
         with:
           terraform_wrapper: false
       - name: Terraform Init
@@ -28,7 +27,7 @@ jobs:
         working-directory: ./terraform
       - name: Terraform Plan
         id: plan
-        run: |-
+        run: |
           terraform plan \
           -var="region=us-east-1" \
           -var="public_key=$PUBLIC_SSH_KEY" \
@@ -38,5 +37,5 @@ jobs:
         working-directory: ./terraform
       - name: Terraform Apply
         id: apply
-        run: terraform apply ./PLAN
+        run: terraform apply Plan
         working-directory: ./terraform
