@@ -8,6 +8,7 @@ terraform{
 
     backend "s3"{
         key ="aws/ec2-deploy/terraform.ftstate"
+        region = "eu-west-3"
     }
 }
 
