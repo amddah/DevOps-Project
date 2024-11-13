@@ -70,11 +70,11 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
       - name: deploy decker image to ec2
-          env:
-            REGISTRY: ${{steps.login-ecr.outputs.registry}}
-            REPOSITORY: exemple-node-app
-            IMAGE_TAG: ${{github.sha}}
-            AWS_DEFAULT_REGION: eu-west-3
+        env:
+          REGISTRY: ${{steps.login-ecr.outputs.registry}}
+          REPOSITORY: exemple-node-app
+          IMAGE_TAG: ${{github.sha}}
+          AWS_DEFAULT_REGION: eu-west-3
         uses: appleboy/ssh-action@master
         with:
           host: ${{env.SERVER_PUBLIC_IP}}
