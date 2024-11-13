@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3  # Mise à jour ici
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2  # Mise à jour ici
+        uses: hashicorp/setup-terraform@v3  # Mise à jour ici
         with:
           terraform_wrapper: false
       - name: Terraform Init
