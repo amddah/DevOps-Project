@@ -18,7 +18,7 @@ jobs:
       SERVER_PUBLIC_IP: ${{steps.set-ip.outputs.instance_public_ip}}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3  # Mise à jour ici
+        uses: actions/checkout@v4  # Mise à jour ici
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3  # Mise à jour ici
         with:
