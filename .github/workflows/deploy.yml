@@ -62,6 +62,9 @@ jobs:
       - name: Set IP env variable
         run: echo "SERVER_PUBLIC_IP=${{needs.deploy-infra.outputs.SERVER_PUBLIC_IP}}" >> $GITHUB_ENV
 
+      - name: Show Terraform Outputs
+        run: terraform output
+        working-directory: ./terraform
       - name: Check SERVER_PUBLIC_IP
         run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
 
