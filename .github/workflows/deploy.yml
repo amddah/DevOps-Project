@@ -50,6 +50,8 @@ jobs:
         run: |
           instance_ip=$(terraform output -raw instance_public_ip)
           echo "::set-output name=instance_public_ip::$instance_ip"
+      - name: Debug SERVER_PUBLIC_IP
+        run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
 
   deploy-app:
     runs-on: ubuntu-latest
