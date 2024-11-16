@@ -15,12 +15,12 @@ jobs:
   deploy-infra:
     runs-on: ubuntu-latest
     outputs:
-      SERVER_PUBLIC_IP: ${{ steps.set-ip.outputs.instance_public_ip }}
+      SERVER_PUBLIC_IP: ${{steps.set-ip.outputs.instance_public_ip}}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Mise à jour ici
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v3  # Mise à jour ici
         with:
           terraform_wrapper: false
       - name: Terraform Init
@@ -40,18 +40,21 @@ jobs:
       - name: List files after plan
         run: ls -l
         working-directory: ./terraform
+
       - name: Terraform Apply
         id: apply
         run: terraform apply ./PLAN
         working-directory: ./terraform
-      - name: Set output IP address
+      - name: Set output
         id: set-ip
         run: |
-          instance_ip=$(terraform output -raw instance_public_ip)
-          echo "SERVER_PUBLIC_IP=$instance_ip" >> $GITHUB_ENV
+           instance_ip=$(terraform output -raw instance_public_ip)
+           echo "SERVER_PUBLIC_IP=$instance_ip" >> $GITHUB_ENV
+      - name: Debug SERVER_PUBLIC_IP
+        run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
       - name: Show Terraform Outputs
-        run: terraform output
-        working-directory: ./terraform
+      run: terraform output
+      working-directory: ./terraform
 
   deploy-app:
     runs-on: ubuntu-latest
@@ -59,37 +62,48 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Set IP env variable
+        run: echo "SERVER_PUBLIC_IP=${{needs.deploy-infra.outputs.SERVER_PUBLIC_IP}}" >> $GITHUB_ENV
+
       - name: Check SERVER_PUBLIC_IP
-        run: echo "SERVER_PUBLIC_IP=${{ env.SERVER_PUBLIC_IP }}"
+        run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
+
+      - name: Set IP env variable
+        run: echo "SERVER_PUBLIC_IP=${{needs.deploy-infra.outputs.SERVER_PUBLIC_IP}}" >> $GITHUB_ENV
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Build and push docker image
+      - name: Build, pusk docker image
         env: 
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{steps.login-ecr.outputs.registry}}
           REPOSITORY: exemple-node-app
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{github.sha}}
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-      - name: Deploy docker image to EC2
+      - name: deploy decker image to ec2
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{steps.login-ecr.outputs.registry}}
           REPOSITORY: exemple-node-app
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{github.sha}}
           AWS_DEFAULT_REGION: eu-west-3
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.SERVER_PUBLIC_IP }}
+          host: ${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}
           username: ubuntu
-          key: ${{ env.PRIVATE_SSH_KEY }}
+          key: ${{env.PRIVATE_SSH_KEY}}
           envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
           script: |
             sudo apt update
-            sudo apt install docker.io -y
+            sudo apt install  docker.io -y
             sudo apt install awscli -y
-            sudo ${aws ecr get-login --no-include-email --region eu-west-3}
+            sudo ${aws ecr get-login --no-include-email --region eu-west-3};
             sudo docker stop myappcontainer || true
             sudo docker rm myappcontainer || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
             sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+
+
+         
+
