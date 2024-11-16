@@ -53,8 +53,8 @@ jobs:
       - name: Debug SERVER_PUBLIC_IP
         run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
       - name: Show Terraform Outputs
-      run: terraform output
-      working-directory: ./terraform
+        run: terraform output
+        working-directory: ./terraform
 
   deploy-app:
     runs-on: ubuntu-latest
