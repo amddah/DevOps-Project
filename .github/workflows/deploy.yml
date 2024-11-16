@@ -48,8 +48,8 @@ jobs:
       - name: Set output
         id: set-ip
         run: |
-           instance_ip=$(terraform output -raw instance_public_ip)
-           echo "SERVER_PUBLIC_IP=$instance_ip" >> $GITHUB_ENV
+          instance_ip=$(terraform output -raw instance_public_ip)
+          echo "SERVER_PUBLIC_IP=$instance_ip" >> $GITHUB_ENV
       - name: Debug SERVER_PUBLIC_IP
         run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
       - name: Show Terraform Outputs
