@@ -50,6 +50,7 @@ jobs:
         run: |
           echo "instance_public_ip=$(terraform output)"
           echo "SERVER_PUBLIC_IP=$instance_public_ip" 
+        working-directory: ./terraform
       - name: Debug SERVER_PUBLIC_IP
         run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
       - name: Show Terraform Outputs
