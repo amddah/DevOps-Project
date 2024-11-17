@@ -82,6 +82,12 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+      - name: Debug Docker Environment
+        run: |
+          docker --version
+          docker info
+          whoami
+          ls -l /var/run/docker.sock
       - name: deploy decker image to ec2
         env:
           REGISTRY: ${{steps.login-ecr.outputs.registry}}
