@@ -88,6 +88,11 @@ jobs:
           docker info
           whoami
           ls -l /var/run/docker.sock
+      - name: Fix Docker Permissions
+        run: |
+          sudo usermod -aG docker $USER
+          newgrp docker
+
       - name: deploy decker image to ec2
         env:
           REGISTRY: ${{steps.login-ecr.outputs.registry}}
