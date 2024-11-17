@@ -48,8 +48,8 @@ jobs:
       - name: Set output
         id: set-ip
         run: |
-          echo "instance_public_ip=$(terraform output)"
-          echo "SERVER_PUBLIC_IP=$instance_public_ip" 
+          instance_ip=$(terraform output -raw instance_public_ip)
+          echo "::set-output name=instance_public_ip::$instance_ip"
         working-directory: ./terraform
       - name: Debug SERVER_PUBLIC_IP
         run: echo "SERVER_PUBLIC_IP=${{env.SERVER_PUBLIC_IP}}"
