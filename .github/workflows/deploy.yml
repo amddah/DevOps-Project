@@ -115,6 +115,12 @@ jobs:
           envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
           script: |
               IMAGE="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+
+              echo "Adding user to Docker group..."
+              sudo usermod -aG docker $USER
+              newgrp docker
+              IMAGE="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+              echo "IMAGE:$IMAGE"
               echo "Authenticating with AWS ECR..."
               aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin $REGISTRY
 
