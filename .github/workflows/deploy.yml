@@ -116,13 +116,8 @@ jobs:
           script: |
               IMAGE="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
 
-              echo "Adding user to Docker group..."
-              sudo usermod -aG docker $USER
-              newgrp docker
-              IMAGE="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
-              echo "IMAGE:$IMAGE"
               echo "Authenticating with AWS ECR..."
-              aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin $REGISTRY
+              sudo su -c "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin $REGISTRY"
 
               echo "Stopping and removing existing container (if any)..."
               sudo docker stop myappcontainer || true
