@@ -95,6 +95,12 @@ jobs:
           sudo usermod -aG docker $USER
           newgrp docker
 
+      - name: Debug Variables
+        run: |
+          echo "REGISTRY=$REGISTRY"
+          echo "REPOSITORY=$REPOSITORY"
+          echo "IMAGE_TAG=$IMAGE_TAG"
+
       - name: Deploy Docker Image to EC2
         env:
           REGISTRY: ${{steps.login-ecr.outputs.registry}}
