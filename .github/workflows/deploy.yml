@@ -105,7 +105,7 @@ jobs:
         with:
           host: ${{needs.deploy-infra.outputs.SERVER_PUBLIC_IP}}
           username: ubuntu
-          key: ${{secrets.PRIVATE_SSH_KEY}}
+          key: ${{secrets.AWS_SSH_KEY_PRIVATE }}
           script: |
             echo "Deploying application on EC2 instance..."
             sudo apt update
