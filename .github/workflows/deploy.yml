@@ -115,11 +115,15 @@ jobs:
           envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
           script: |
               IMAGE="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
-              echo "Pulling Docker image: $IMAGE"
-              sudo apt-get update
-              sudo apt-get install -y docker.io awscli
+              echo "Authenticating with AWS ECR..."
               aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin $REGISTRY
+
+              echo "Stopping and removing existing container (if any)..."
               sudo docker stop myappcontainer || true
               sudo docker rm myappcontainer || true
+
+              echo "Pulling new Docker image: $IMAGE"
               sudo docker pull $IMAGE
+
+              echo "Running the new container..."
               sudo docker run -d --name myappcontainer -p 80:8080 $IMAGE
