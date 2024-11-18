@@ -114,11 +114,12 @@ jobs:
           key: ${{env.PRIVATE_SSH_KEY}}
           envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
           script: |
-            sudo apt update
-            sudo apt install  docker.io -y
-            sudo apt install awscli -y
-            sudo ${aws ecr get-login --no-include-email --region eu-west-3};
-            sudo docker stop myappcontainer || true
-            sudo docker rm myappcontainer || true
-            sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
+              IMAGE="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+              echo "Pulling Docker image: $IMAGE"
+              sudo apt-get update
+              sudo apt-get install -y docker.io awscli
+              aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin $REGISTRY
+              sudo docker stop myappcontainer || true
+              sudo docker rm myappcontainer || true
+              sudo docker pull $IMAGE
+              sudo docker run -d --name myappcontainer -p 80:8080 $IMAGE
